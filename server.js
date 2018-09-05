@@ -7,8 +7,8 @@ var pubSyncfunc = require('./datacheck/publicity');
 var dcSyncfunc = require('./datacheck/dailycount');
 var comSyncfunc = require('./datacheck/compensation');
 var hwcSyncfunc = require('./datacheck/hwc');
-var reportDCfunc = require('./reports/dcreports');
-var reportHWCfunc = require('./reports/hwcreports');
+var reportDCfunc = require('./reports/dailycountReports');
+var reportHWCfunc = require('./reports/hwcReports');
 
 var bodyParser = require("body-parser");
 var express = require("express");
@@ -40,21 +40,16 @@ app.use(cors());
 //         next();
 //     }
 // })
-var port = process.env.port || 2000;
+var port = process.env.port || 8080;
 // var router = express.Router();
 
 app.get("/", function (req, res) { res.send("[ Home - Page of API's ]") });
 
+app.get("/getHWCreport", reportHWCfunc.report.getHWCbyrange);
+
 app.get("/getDCreportbyMonth", reportDCfunc.report.getdailycount);
 app.get("/getDCreportbyday", reportDCfunc.report.getdailycountbyday);
 app.post("/getDCreportbyrange", reportDCfunc.report.getdailycountbyrange);
-
-app.get("/getHWCreport_byCat", reportHWCfunc.report.getHWC_byCat);
-app.get("/getHWCreport_bycases", reportHWCfunc.report.getHWC_caseattended);
-app.get("/getHWCreport_byday", reportHWCfunc.report.getHWC_eachday);
-app.post("/getHWCreport_bycases_range", reportHWCfunc.report.getHWC_caseattended_byrange);
-app.post("/getHWCreport_byday_range", reportHWCfunc.report.getHWC_eachday_byrange);
-app.post("/getHWCreport_byspacial_range", reportHWCfunc.report.getHWC_bySpacial_byrange);
 
 app.post("/authUser", userfunctions.caller.authUser);
 app.get("/users", userfunctions.caller.getusers);
@@ -77,6 +72,17 @@ app.get("/gethwc/:id", hwcfunctions.caller.get_hwcall_byid);
 
 app.get("/getcase_users", csfunctions.caller.get_case_users);
 app.get("/img", pubfunctions.caller.getpubImg);
+
+              ///charts APIs
+
+//home
+app.post("/getBpNhByRange", reportDCfunc.report.getBpNhByRange);
+app.get("/getPreviousBpNhCount", reportDCfunc.report.getPreviousBpNhCount);
+app.post("/getBpByCategory", reportDCfunc.report.getBpByCategory);
+app.post("/getNhByCategory", reportDCfunc.report.getNhByCategory);
+app.post("/getBpNhByCategory", reportDCfunc.report.getBpNhByCategory);
+app.get("/getBpNhYearly", reportDCfunc.report.getBpNhYearly);
+
 
 //observer
 setInterval(hwcSyncfunc.func.syncallhwvdetails, 1000 * 60 * 1);
